@@ -28,7 +28,15 @@ typedef struct {
 #define __pyx_atomic_int_type int
 // todo: Portland pgcc, maybe OS X's OSAtomicIncrement32,
 //       libatomic + autotools-like distutils support? Such a pain...
-#if CYTHON_ATOMICS && __GNUC__ >= 4 && (__GNUC_MINOR__ > 1 ||           \
+#if CYTHON_COMPILING_IN_NOGIL
+    #define __pyx_atomic_incr_aligned(value, lock) _Py_atomic_add_int(value, 1)
+    #define __pyx_atomic_decr_aligned(value, lock) _Py_atomic_add_int(value, 1)
+    #undef CYTHON_ATOMICS
+    #define CYTHON_ATOMICS 1
+    #ifdef __PYX_DEBUG_ATOMICS
+        #warning "Using nogil atomics"
+    #endif
+#elif CYTHON_ATOMICS && __GNUC__ >= 4 && (__GNUC_MINOR__ > 1 ||           \
                     (__GNUC_MINOR__ == 1 && __GNUC_PATCHLEVEL >= 2)) && \
                     !defined(__i386__)
     /* gcc >= 4.1.2 */
@@ -43,6 +51,7 @@ typedef struct {
     #include <Windows.h>
     #undef __pyx_atomic_int_type
     #define __pyx_atomic_int_type LONG
+    // FIXME(sgross): InterlockedIncrement returns the NEW value but cython expects the OLD value.
     #define __pyx_atomic_incr_aligned(value, lock) InterlockedIncrement(value)
     #define __pyx_atomic_decr_aligned(value, lock) InterlockedDecrement(value)
 
@@ -50,6 +59,7 @@ typedef struct {
         #pragma message ("Using MSVC atomics")
     #endif
 #elif CYTHON_ATOMICS && (defined(__ICC) || defined(__INTEL_COMPILER)) && 0
+    // FIXME(sgross): InterlockedIncrement returns the NEW value but cython expects the OLD value.
     #define __pyx_atomic_incr_aligned(value, lock) _InterlockedIncrement(value)
     #define __pyx_atomic_decr_aligned(value, lock) _InterlockedDecrement(value)
 
