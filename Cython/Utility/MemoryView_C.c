@@ -30,7 +30,7 @@ typedef struct {
 //       libatomic + autotools-like distutils support? Such a pain...
 #if CYTHON_COMPILING_IN_NOGIL
     #define __pyx_atomic_incr_aligned(value, lock) _Py_atomic_add_int(value, 1)
-    #define __pyx_atomic_decr_aligned(value, lock) _Py_atomic_add_int(value, 1)
+    #define __pyx_atomic_decr_aligned(value, lock) _Py_atomic_add_int(value, -1)
     #undef CYTHON_ATOMICS
     #define CYTHON_ATOMICS 1
     #ifdef __PYX_DEBUG_ATOMICS
