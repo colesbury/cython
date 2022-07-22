@@ -49,3 +49,5 @@ cdef extern from "Python.h":
     # value of a variable that might be traversed during garbage
     # collection.
 
+    Py_ssize_t Py_REFCNT(PyObject* o)
+    # Return the reference count for object o.

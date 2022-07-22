@@ -13,7 +13,7 @@ from cython.view cimport memoryview, array
 from cython cimport view
 
 from cpython.object cimport PyObject
-from cpython.ref cimport Py_INCREF, Py_DECREF
+from cpython.ref cimport Py_INCREF, Py_DECREF, Py_REFCNT
 cimport cython
 
 import array as pyarray
@@ -669,7 +669,7 @@ def decref(*args):
 @cython.binding(False)
 @cython.always_allow_keywords(False)
 def get_refcount(x):
-    return (<PyObject*>x).ob_refcnt
+    return Py_REFCNT(<PyObject*>x)
 
 def printbuf_object(object[:] mslice, shape):
     """
@@ -692,7 +692,7 @@ def printbuf_object(object[:] mslice, shape):
     cdef object buf = mslice
     cdef int i
     for i in range(shape[0]):
-        print repr(buf[i]), (<PyObject*>buf[i]).ob_refcnt
+        print repr(buf[i]), Py_REFCNT(<PyObject*>buf[i])
 
 def assign_to_object(object[:] mslice, int idx, obj):
     """
