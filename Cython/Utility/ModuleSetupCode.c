@@ -325,6 +325,7 @@
     // them thread safe. Since it will probably work, let the user decide.
     #define CYTHON_USE_FREELISTS 0
   #endif
+  #define CYTHON_METH_FASTCALL 0
 
 #else
   #define CYTHON_COMPILING_IN_PYPY 0
